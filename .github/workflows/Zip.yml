@@ -1,0 +1,35 @@
+name: Unzip Backrooms
+
+on:
+  push:
+    branches:
+      - main  # Führt den Workflow aus, wenn Code in 'main' gepusht wird
+  workflow_dispatch: # Ermöglicht das manuelle Starten über GitHub
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Code aus dem Repository auschecken
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Zielordner erstellen (falls er noch nicht existiert) und entpacken
+      - name: Unzip Backrooms.zip to docs/
+        run: |
+          mkdir -p docs
+          unzip -o Backrooms.zip -d docs/
+
+      # 3. Änderungen committen und zurück ins Repo pushen (Optional)
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@://github.com"
+          git add docs/
+          if ! git diff --staged --quiet; then
+            git commit -m "Automated: Unzip Backrooms.zip to docs/"
+            git push
+          else
+            echo "Keine Änderungen zum Committen vorhanden."
+          fi
